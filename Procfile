@@ -1,1 +1,1 @@
-web: python locobot.py
+worker: python locobot.py
