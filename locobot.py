@@ -1,6 +1,6 @@
 import telebot, re, nltk
 from t import TOKEN
-from streets39 import streets
+from streets39 import streets, elements
 
 def isAnagram(str1, str2): #проверяет анограмма и игнорирует опечатки
     str1_list = list(clean(str1))
@@ -20,6 +20,42 @@ def get_streets(text): #возвращает список улиц, анагра
                 streetList.append(str(street))
     return streetList
 
+def mendeleev(qu):
+    nums = ''
+    names = ''
+    rus = ''
+    qu=qu.lower()
+    qu=qu.split()
+    for q in qu:
+        if q[0] in 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя':
+            for el in elements:
+                if el['ru'].lower() == str(q):
+                    nums += el['num']
+                    names += el['name']
+                    rus += el['ru']
+            nums += ' '
+            names += ' '
+            rus += ' '
+        elif q[0] in 'abcdefghijklmnopqrstuvwxyz':
+            for el in elements:
+                if el['name'].lower() == str(q):
+                    nums += el['num']
+                    names += el['name']
+                    rus += el['ru']
+            nums += ' '
+            names += ' '
+            rus += ' '
+        elif q[0] in '123456789':
+            for el in elements:
+                if el['num'].lower() == str(q):
+                    nums += el['num']
+                    names += el['name']
+                    rus += el['ru']
+            nums += ' '
+            names += ' '
+            rus += ' '
+    ans = nums + '\n' + names + '\n' + rus
+    return(ans)
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -53,5 +89,6 @@ def loco(message):
             bot.send_message(message.chat.id, ans)
         else:
             bot.send_message(message.chat.id, "улица не найдена")
-
+    elif message.text.split(' ', 1)[0] == 'менд' or message.text.split(' ', 1)[0] == 'Менд':
+        bot.send_message(message.chat.id, mendeleev(message.text.split(' ', 1)[1]))
 bot.polling(none_stop=True)
