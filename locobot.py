@@ -20,6 +20,19 @@ def get_streets(text): #возвращает список улиц, анагра
                 streetList.append(str(street))
     return streetList
 
+alfa = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
+def alf(qu):
+  q = qu.split()
+  ap = ''
+  an = ''
+  for l in q:
+    if  l.isdigit():
+      if int(l) in range(1,34):
+        ap += alfa[int(l)-1]
+        an += alfa[33-int(l)]
+  ans = ap + '\n' + an
+  return(ans)
+
 def mendeleev(qu):
     nums = ''
     names = ''
@@ -91,4 +104,7 @@ def loco(message):
             bot.send_message(message.chat.id, "улица не найдена")
     elif message.text.split(' ', 1)[0] == 'менд' or message.text.split(' ', 1)[0] == 'Менд':
         bot.send_message(message.chat.id, mendeleev(message.text.split(' ', 1)[1]))
+
+    elif message.text.split(' ', 1)[0] == 'алф' or message.text.split(' ', 1)[0] == 'Алф':
+        bot.send_message(message.chat.id, alf(message.text.split(' ', 1)[1]))
 bot.polling(none_stop=True)
