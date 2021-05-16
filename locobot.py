@@ -1,6 +1,9 @@
 import telebot, re, nltk
 from t import TOKEN
 from streets39 import streets, elements
+import subprocess
+import os
+import speech_recognition as speech_recog
 
 def isAnagram(str1, str2): #проверяет анограмма и игнорирует опечатки
     str1_list = list(clean(str1))
@@ -70,6 +73,29 @@ def mendeleev(qu):
     ans = nums + '\n' + names + '\n' + rus
     return(ans)
 
+def speach_code():
+  src_filename = 'audio_2021.ogg'
+  dest_filename = 'output.wav'
+  if os.path.exists('output.wav'):
+      os.remove('output.wav')
+  #os.remove('/content/output.wav')
+  process = subprocess.run(['ffmpeg', '-i', src_filename, dest_filename])
+  if process.returncode != 0:
+      raise Exception("Something went wrong")
+#вариант конвертации который не работает с голосовыми телеграмма
+#data, samplerate = sf.read('/content/audio_2021.ogg')
+#sf.write('/content/audio_2021.wav', data, samplerate)
+  sample_audio = speech_recog.AudioFile('output.wav')
+  with sample_audio as audio_file:
+    recog=speech_recog.Recognizer()
+    #recog.adjust_for_ambient_noise(audio_file) #удаление шума для улучшения качества
+    audio_content = recog.record(audio_file)
+  try:
+    ans = recog.recognize_google(audio_content, language="ru-RU")
+  except Exception as e:
+    print ("Error: " + str(e))
+  return(ans)
+
 bot = telebot.TeleBot(TOKEN)
 
 print('стартанул наверное')
@@ -78,10 +104,37 @@ print('стартанул наверное')
 def start_message(message):
     help_message = """Для получения геолокации отправьте кординаты 
 в формате 54.хххх 20,2222 (точка или запятая)
+------------
 для поиска анаграмы улицы введите:
-анаг "искомаяУлица" (без кавычек)"""
+анаг "искомаяУлица" (без кавычек)
+------------
+для поиска элементов таблицы Менделеева 
+введите элементы через пробел:
+менд 12 Br хром, ответ:  
+12 35 24
+Mg Br Cr
+Магний Бром Хром
+------------
+Голосовые сообщения, переводятся в текст, а состоящие из цифр, отправляются в виде кода /12345"""
 
     bot.send_message(message.chat.id, help_message)
+
+@bot.message_handler(content_types=['voice'])
+def handle_voice(message):
+  bot.send_message(message.chat.id, 'распознал команду') #убрать в продакшене
+  #print(message.voice)
+  file_info = bot.get_file(message.voice.file_id)
+  #file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(token, file_info.file_path))
+  file = bot.download_file(file_info.file_path)
+  if os.path.exists('audio_2021.ogg'):
+      os.remove('audio_2021.ogg')
+  with open('audio_2021.ogg', 'wb') as new_file:
+      new_file.write(file)
+  mess = speach_code()
+  bot.reply_to(message, mess)
+  mess = mess.replace(' ', '')
+  if mess[0] in '0123456789':
+      bot.send_message(message.chat.id, f'/{mess}')
 
 #все декораторы что ниже не включаются
 @bot.message_handler(content_types=["text"])

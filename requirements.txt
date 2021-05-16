@@ -1,2 +1,5 @@
 pyTelegramBotAPI
 nltk
+SpeechRecognition
+soundfile
+ftransc
