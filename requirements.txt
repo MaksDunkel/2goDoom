@@ -3,3 +3,5 @@ nltk
 SpeechRecognition
 soundfile
 ftransc
+requests
+beautifulsoup4

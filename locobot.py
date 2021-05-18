@@ -4,6 +4,29 @@ from streets39 import streets, elements
 import subprocess
 import os
 import speech_recognition as speech_recog
+from requests import get
+import bs4
+from bs4 import BeautifulSoup as BS
+
+def find_streets(search): #парсинг сайта для получения списка улиц
+    a = {'а': '%E0', 'б': '%E1', 'в': '%E2', 'г': '%E3', 'д': '%E4', 'е': '%E5', 'ё': '%B8', 'ж': '%E6', 'з': '%E7',
+         'и': '%E8', 'й': '%E9', 'к': '%EA', 'л': '%EB', 'м': '%EC', 'н': '%ED', 'о': '%EE', 'п': '%EF', 'р': '%F0',
+         'с': '%F1', 'т': '%F2', 'у': '%F3', 'ф': '%F4', 'х': '%F5', 'ц': '%F6', 'ч': '%F7', 'ш': '%F8', 'щ': '%F9',
+         'ъ': '%FA', 'ы': '%FB', 'ь': '%FC', 'э': '%FD', 'ю': '%FE', 'я': '%FF'}
+    search = search.lower()
+    tbl = search.maketrans(a)
+    key = search.translate(tbl)
+    href = get(r'https://www.klgd.ru/city/streets/index.php?key=' + key + '&SHOWALL_1=1').text
+    soup = BS(href, 'html.parser')
+    table = soup.find_all('td')
+    result = ''
+    for street in table:
+        try:
+            title = street.find('b').get_text()
+            result += title + '\n'
+        except:
+            pass
+    return (result)
 
 def isAnagram(str1, str2): #проверяет анограмма и игнорирует опечатки
     str1_list = list(clean(str1))
@@ -155,6 +178,7 @@ def loco(message):
             bot.send_message(message.chat.id, ans)
         else:
             bot.send_message(message.chat.id, "улица не найдена")
+        bot.send_message(message.chat.id, "\n-список улиц, содержащих: "+message.text.split(' ', 1)[1]+'\n'+find_streets(message.text.split(' ', 1)[1]))
     elif message.text.split(' ', 1)[0] == 'менд' or message.text.split(' ', 1)[0] == 'Менд':
         bot.send_message(message.chat.id, mendeleev(message.text.split(' ', 1)[1]))
 
