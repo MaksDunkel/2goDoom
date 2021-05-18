@@ -154,6 +154,10 @@ def handle_voice(message):
   with open('audio_2021.ogg', 'wb') as new_file:
       new_file.write(file)
   mess = speach_code()
+  if os.path.exists('output.wav'):
+      os.remove('output.wav')
+  if os.path.exists('audio_2021.ogg'):
+      os.remove('audio_2021.ogg')
   bot.reply_to(message, mess)
   mess = mess.replace(' ', '')
   if mess[0] in '0123456789':
