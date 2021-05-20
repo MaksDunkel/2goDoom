@@ -48,15 +48,23 @@ def get_streets(text): #возвращает список улиц, анагра
 
 alfa = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
 def alf(qu):
+  qu=qu.lower()
   q = qu.split()
   ap = ''
   an = ''
+  wr = ''
   for l in q:
     if  l.isdigit():
       if int(l) in range(1,34):
         ap += alfa[int(l)-1]
         an += alfa[33-int(l)]
-  ans = ap + '\n' + an
+    else:
+      n = ''
+      w = l
+      for s in w:
+        n += ' ' + (str(alfa.index(s)+1))
+      wr += w + ':' + n + '\n'   
+  ans = ap + '\n' + an +'\n' + wr
   return(ans)
 
 def mendeleev(qu):
