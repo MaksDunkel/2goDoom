@@ -5,7 +5,6 @@ import subprocess
 import os
 import speech_recognition as speech_recog
 from requests import get
-import bs4
 from bs4 import BeautifulSoup as BS
 
 def find_streets(search): #парсинг сайта для получения списка улиц
@@ -47,7 +46,7 @@ def get_streets(text): #возвращает список улиц, анагра
     return streetList
 
 alfa = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я']
-def alf(qu):
+def alf(qu): # переводит слова в цифры, цыфры в буквы 
   qu=qu.lower()
   q = qu.split()
   ap = ''
@@ -60,14 +59,14 @@ def alf(qu):
         an += alfa[33-int(l)]
     else:
       n = ''
-      w = l
+      w = clean(l)
       for s in w:
         n += ' ' + (str(alfa.index(s)+1))
       wr += w + ':' + n + '\n'   
   ans = ap + '\n' + an +'\n' + wr
   return(ans)
 
-def mendeleev(qu):
+def mendeleev(qu):  #ищет элементы в таблице менделеева
     nums = ''
     names = ''
     rus = ''
@@ -138,6 +137,7 @@ def start_message(message):
 ------------
 введите: алф 1 2 3 получите буквы 
 по номерам с начала и с конца
+если ввести слово - результат обратный
 ------------
 для поиска улицы или её анаграмы введите:
 анаг "искомаяУлица" (без кавычек)
@@ -149,13 +149,13 @@ def start_message(message):
 Mg Br Cr
 Магний Бром Хром
 ------------
-Голосовые сообщения, переводятся в текст, а состоящие из цифр, отправляются в виде кода /12345"""
+Голосовые сообщения, переводятся в текст, а состоящие из цифр, отправляются в виде кода 12345"""
 
     bot.send_message(message.chat.id, help_message)
 
 @bot.message_handler(content_types=['voice'])
 def handle_voice(message):
-  bot.send_message(message.chat.id, 'распознал команду') #убрать в продакшене
+  #bot.send_message(message.chat.id, 'распознал команду') #убрать в продакшене
   #print(message.voice)
   file_info = bot.get_file(message.voice.file_id)
   #file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(token, file_info.file_path))
@@ -172,7 +172,7 @@ def handle_voice(message):
   bot.reply_to(message, mess)
   mess = mess.replace(' ', '')
   if mess[0] in '0123456789':
-      bot.send_message(message.chat.id, f'/{mess}')
+      bot.send_message(message.chat.id, f'{mess}')
 
 #все декораторы что ниже не включаются
 @bot.message_handler(content_types=["text"])
