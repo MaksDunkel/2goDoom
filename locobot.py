@@ -104,6 +104,7 @@ def mendeleev(qu):  #ищет элементы в таблице менделе�
     return(ans)
 
 def speach_code():
+  ans = ''
   src_filename = 'audio_2021.ogg'
   dest_filename = 'output.wav'
   if os.path.exists('output.wav'):
