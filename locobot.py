@@ -2,7 +2,7 @@ import telebot, re, nltk
 from t import TOKEN
 from streets39 import streets, elements
 import subprocess
-import os
+import os, datetime
 import speech_recognition as speech_recog
 from requests import get
 from bs4 import BeautifulSoup as BS
@@ -200,4 +200,17 @@ def loco(message):
 
     elif message.text.split(' ', 1)[0] == 'алф' or message.text.split(' ', 1)[0] == 'Алф':
         bot.send_message(message.chat.id, alf(message.text.split(' ', 1)[1]))
+    elif message.text.split(' ', 1)[0] == 'when' or message.text.split(' ', 1)[0] == 'When':
+        #tconv = lambda x: time.strftime("%d дней %H часов %M мин ", time.localtime(x))
+        #arrive = int("1628680200")
+        #print (tconv(arrive - message.date))
+        now = datetime.datetime.now() #datetime.datetime(2021, 7, 22, 22, 21, 00)
+        then = datetime.datetime(2021, 8, 11, 11, 10, 00)
+        # Кол-во времени между датами.
+        delta = then - now
+        print(delta.days)  # дней
+        h = delta.seconds // 3600 #час
+        m = (delta.seconds % 3600) // 60
+        print(h, m)
+        bot.send_message(message.chat.id, f'до встречи осталось: \n days: {delta.days} \n hours: {h} \n min: {m}')
 bot.polling(none_stop=True)
