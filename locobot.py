@@ -150,7 +150,7 @@ def start_message(message):
 Mg Br Cr
 Магний Бром Хром
 ------------
-Голосовые сообщения, переводятся в текст, а состоящие из цифр, отправляются в виде кода 12345"""
+Голосовые сообщения, переводятся в текст"""
 
     bot.send_message(message.chat.id, help_message)
 
@@ -185,8 +185,9 @@ def loco(message):
         longitude = message.text[message.text.find(" ") + 1:]
         bot.send_location(message.chat.id, latitude.replace(',','.'), longitude.replace(',','.'))
         #bot.send_message(message.chat.id, result)
+
+    # вызов анагроматора улиц
     elif message.text.split(' ',1)[0] == 'анаг' or message.text.split(' ',1)[0] == 'Анаг':
-        #bot.send_message(message.chat.id, 'распознал команду')
         ans = ''
         for street in get_streets(message.text.split(' ', 1)[1]):
             ans += str(street) + '\n'
@@ -195,22 +196,23 @@ def loco(message):
         else:
             bot.send_message(message.chat.id, "улица не найдена")
         bot.send_message(message.chat.id, "\n-список улиц, содержащих: "+message.text.split(' ', 1)[1]+'\n'+find_streets(message.text.split(' ', 1)[1]))
+
+    #вызов функции поиска по таблице менделеева
     elif message.text.split(' ', 1)[0] == 'менд' or message.text.split(' ', 1)[0] == 'Менд':
         bot.send_message(message.chat.id, mendeleev(message.text.split(' ', 1)[1]))
 
+    #вызов алфавита по номерам
     elif message.text.split(' ', 1)[0] == 'алф' or message.text.split(' ', 1)[0] == 'Алф':
         bot.send_message(message.chat.id, alf(message.text.split(' ', 1)[1]))
+
+    #обратный отсчет до определенной даты
     elif message.text.split(' ', 1)[0] == 'when' or message.text.split(' ', 1)[0] == 'When':
-        #tconv = lambda x: time.strftime("%d дней %H часов %M мин ", time.localtime(x))
-        #arrive = int("1628680200")
-        #print (tconv(arrive - message.date))
-        now = datetime.datetime.now() #datetime.datetime(2021, 7, 22, 22, 21, 00)
-        then = datetime.datetime(2021, 8, 11, 11, 10, 00)
+        now = datetime.datetime.now()
+        then = datetime.datetime(2021, 8, 11, 9, 10, 00)
         # Кол-во времени между датами.
         delta = then - now
-        print(delta.days)  # дней
         h = delta.seconds // 3600 #час
-        m = (delta.seconds % 3600) // 60
-        print(h, m)
+        m = (delta.seconds - (h*3600)) // 60
+        #print(h, m)
         bot.send_message(message.chat.id, f'до встречи осталось: \n days: {delta.days} \n hours: {h} \n min: {m}')
 bot.polling(none_stop=True)
