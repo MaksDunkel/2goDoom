@@ -6,6 +6,7 @@ import os, datetime
 import speech_recognition as speech_recog
 from requests import get
 from bs4 import BeautifulSoup as BS
+from dadata import Dadata 
 
 def find_streets(search): #парсинг сайта для получения списка улиц
     a = {'а': '%E0', 'б': '%E1', 'в': '%E2', 'г': '%E3', 'д': '%E4', 'е': '%E5', 'ё': '%B8', 'ж': '%E6', 'з': '%E7',
@@ -26,6 +27,22 @@ def find_streets(search): #парсинг сайта для получения �
         except:
             pass
     return (result)
+
+def global_streets(glo): # поиск улицы через ДАДАТА
+    token = "0dfce3e883b7c40ba607cf4039e17271d53407f3"
+    secret = "832eace0bb5f6608d4471c4517de2f066e9bd5f9"
+    dadata = Dadata(token, secret)
+    city = "Калининград"
+    find = "овая"
+    result = dadata.suggest("address", f'{city} {glo}', 20)
+    ans = ''
+    for r in result:
+        try:
+            title = r['value']
+            ans += title + '\n'
+        except:
+            pass
+    return (ans)
 
 def isAnagram(str1, str2): #проверяет анограмма и игнорирует опечатки
     str1_list = list(clean(str1))
@@ -187,16 +204,21 @@ def loco(message):
         #bot.send_message(message.chat.id, result)
 
     # вызов анагроматора улиц
-    elif message.text.split(' ',1)[0] == 'анаг' or message.text.split(' ',1)[0] == 'Анаг':
+    elif message.text.split(' ',1)[0] == 'ищем' or message.text.split(' ',1)[0] == 'Ищем':
         ans = ''
         for street in get_streets(message.text.split(' ', 1)[1]):
             ans += str(street) + '\n'
         if ans != '':
             bot.send_message(message.chat.id, ans)
         else:
-            bot.send_message(message.chat.id, "улица не найдена")
+            bot.send_message(message.chat.id, "анаграмма улицы не найдена")
         bot.send_message(message.chat.id, "\n-список улиц, содержащих: "+message.text.split(' ', 1)[1]+'\n'+find_streets(message.text.split(' ', 1)[1]))
+    
+    #вызов поиска через дадата
+    elif message.text.split(' ',1)[0] == 'глоб' or message.text.split(' ',1)[0] == 'Глоб':
+        bot.send_message(message.chat.id, "\n-список улиц, содержащих: "+message.text.split(' ', 1)[1]+'\n'+global_streets(message.text.split(' ', 1)[1]))
 
+        
     #вызов функции поиска по таблице менделеева
     elif message.text.split(' ', 1)[0] == 'менд' or message.text.split(' ', 1)[0] == 'Менд':
         bot.send_message(message.chat.id, mendeleev(message.text.split(' ', 1)[1]))
